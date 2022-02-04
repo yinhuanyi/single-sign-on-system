@@ -14,17 +14,18 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"goods-server/controllers/response"
-	"goods-server/model"
-	"goods-server/settings"
-	"goods-server/utils"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+	"user-server/controllers/response"
+	"user-server/model"
+	"user-server/settings"
+	"user-server/utils"
 )
 
+//const SSOAuthorize = "http://localhost:10541/api/v1/authorize"
 const SSOAuthorize = "http://localhost:8888/api/v1/authorize"
 const SSOToken = "http://localhost:10541/api/v1/token"
 const ClientId = "goods_id"
@@ -101,9 +102,6 @@ func JWTAuth() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-
-			// 写入access_token和refresh_token到redis中
-
 
 			// 这里直接返回，加上一个redirect字段，浏览器获取到这redirect字段，说明需要重新发起请求给对应的url
 			redirectUrl := fmt.Sprintf("http://localhost:%d%s", settings.Conf.Port, c.Request.URL.Path)

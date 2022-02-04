@@ -9,8 +9,8 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"goods-server/controllers"
-	"goods-server/middlewares"
+	"user-server/controllers"
+	"user-server/middlewares"
 )
 
 func Init(mode string) *gin.Engine {
@@ -35,10 +35,6 @@ func Init(mode string) *gin.Engine {
 	goodsRouter.Use(middlewares.JWTAuth())
 	{
 		goodsRouter.POST("/create", controllers.GoodsCreateHandler) // 增
-		goodsRouter.GET("/get", controllers.GoodsGetHandler)        // 查找
-		goodsRouter.POST("/update", controllers.GoodsUpdateHandler) // 更新
-		goodsRouter.GET("/list", controllers.GoodsListHandler)      // 列表
-		goodsRouter.DELETE("/delete", controllers.GoodsDeleteHandler) // 删除
 	}
 
 	return r

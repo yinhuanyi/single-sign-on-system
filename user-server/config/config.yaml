@@ -1,13 +1,13 @@
-name: "goods"
+name: "user"
 mode: "dev"
 version: "1.0.1"
-port: 10001
+port: 10002
 start_time: "2020-07-01"
-machine_id: 1
+machine_id: 2
 
 log:
   level: "debug"
-  filename: "logs/goods.log"
+  filename: "logs/user.log"
   max_size: 20
   max_age: 30
   max_backups: 7
@@ -17,7 +17,7 @@ mysql:
   port: 3306
   user: "root"
   password: "yhy3426356"
-  dbname: "goods"
+  dbname: "sso"
   max_open_connection: 1000
   max_idle_connection: 100
 

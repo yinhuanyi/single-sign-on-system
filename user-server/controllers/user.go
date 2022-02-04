@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"goods-server/controllers/response"
-	"goods-server/model"
-	"goods-server/utils"
+	"user-server/controllers/response"
+	"user-server/model"
+	"user-server/utils"
 )
 
 // SSOLoginHandler 前端登录请求
@@ -33,30 +33,4 @@ func GoodsCreateHandler(c *gin.Context)  {
 
 }
 
-func GoodsGetHandler(c *gin.Context)  {
-	fmt.Println(c)
-	fmt.Printf("%+v\n", c)
-
-}
-
-func GoodsUpdateHandler(c *gin.Context)  {
-
-}
-
-func GoodsDeleteHandler(c *gin.Context)  {
-
-}
-
-func GoodsListHandler(c *gin.Context)  {
-
-	//categoryList, err := service.CategoryList()
-	//if err != nil {
-	//	zap.L().Error("service.CategoryList", zap.Error(err))
-	//	response.ResponseError(c, response.CodeServerBusy)
-	//	return
-	//}
-	//
-	//response.ResponseSuccess(c, categoryList)
-
-}
 

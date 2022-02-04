@@ -9,7 +9,7 @@ package logger
 
 import (
 	"os"
-	"goods-server/settings"
+	"user-server/settings"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
