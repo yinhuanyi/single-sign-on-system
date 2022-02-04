@@ -1,0 +1,50 @@
+name: "sso"
+mode: "dev"
+version: "1.0.1"
+port: 10541
+
+log:
+  level: "debug"
+  filename: "logs/sso.log"
+  max_size: 20
+  max_age: 30
+  max_backups: 7
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: "yhy3426356"
+  dbname: "sso"
+  max_open_connection: 1000
+  max_idle_connection: 100
+
+# 这个Redis连接给Oauth2的client存储使用
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: ""
+  db: 1
+
+session:
+  session_id: "session_id"
+  hash_key: "Iay1B9p4Bi28EVsT*qzF"
+
+
+oauth2:
+  client:
+    - client_id: "goods_id"
+      client_secret: "goods_secret"
+      client_name: "goods service"
+      client_domain: "http://localhost:8888"
+      client_scope:
+        - name: "all"
+          title: "所有权限"
+
+    - client_id: "client_2"
+      client_secret: "secret_2"
+      client_name: "goods service"
+      client_domain: "http://localhost:10002"
+      client_scope:
+        - name: "all"
+          title: "购物车商品、购物记录、订单列表等"
