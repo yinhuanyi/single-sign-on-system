@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	mysqlconnect "goods-server/dao/mysql"
+	redisconnect "goods-server/dao/redis"
 	"goods-server/logger"
 	"goods-server/pkg/snowflake"
 	"goods-server/route"
@@ -47,7 +48,6 @@ func main() {
 	log.Println("MySQL init success")
 	defer mysqlconnect.Close()
 
-	// 4：初始化Redis
 	if err := redisconnect.Init(settings.Conf.RedisConfig); err != nil {
 		fmt.Printf("Redis init faied：%v", err)
 	}

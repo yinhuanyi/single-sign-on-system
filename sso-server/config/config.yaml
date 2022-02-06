@@ -41,10 +41,10 @@ oauth2:
         - name: "all"
           title: "所有权限"
 
-    - client_id: "client_2"
-      client_secret: "secret_2"
-      client_name: "goods service"
-      client_domain: "http://localhost:10002"
+    - client_id: "user_id"
+      client_secret: "user_secret"
+      client_name: "user service"
+      client_domain: "http://localhost:8888"
       client_scope:
         - name: "all"
-          title: "购物车商品、购物记录、订单列表等"
+          title: "所有权限"

@@ -9,8 +9,8 @@ package mysqlconnect
 
 import (
 	"fmt"
-	"log"
 	"goods-server/settings"
+	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"

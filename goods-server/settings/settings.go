@@ -52,7 +52,7 @@ type RedisConfig struct {
 	Host     string `mapstructure:"host"`
 	Password string `mapstructure:"password"`
 	Port     int    `mapstructure:"port"`
-	Db       int    `mapstructure:"dbname"`
+	Db       int    `mapstructure:"db"`
 	PoolSize int    `mapstructure:"port"`
 }
 

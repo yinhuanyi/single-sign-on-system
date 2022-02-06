@@ -30,11 +30,11 @@ func Init(mode string) *gin.Engine {
 		v1.GET("/sso_login", middlewares.JWTAuth(), controllers.SSOLoginHandler)
 	}
 
-	goodsRouter := v1.Group("/goods")
+	userRouter := v1.Group("/user")
 
-	goodsRouter.Use(middlewares.JWTAuth())
+	userRouter.Use(middlewares.JWTAuth())
 	{
-		goodsRouter.POST("/create", controllers.GoodsCreateHandler) // 增
+		userRouter.GET("/profile", controllers.UserProfileHandler) // 增
 	}
 
 	return r

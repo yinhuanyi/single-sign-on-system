@@ -22,7 +22,7 @@ func Init(cfg *settings.SessionConfig) (err error) {
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   60 * 20,
-		HttpOnly: true,
+		HttpOnly: false, // 如果HttpOnly为true，那么前端js无法操作cookie
 		Secure:   false,
 	}
 

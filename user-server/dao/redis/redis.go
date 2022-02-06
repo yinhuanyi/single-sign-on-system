@@ -5,12 +5,11 @@
  **/
 
 package redis
-
 import (
 	"fmt"
 	"github.com/go-redis/redis"
-	"goods-server/settings"
 	"log"
+	"user-server/settings"
 )
 
 

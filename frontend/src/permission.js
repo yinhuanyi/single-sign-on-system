@@ -15,9 +15,13 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next('/') // 如果用户访问的是/login，那么跳转到首页
     } else {
+      if (!store.getters.hasUserInfo) {
+        await store.dispatch('user/getUserInfo')
+      }
       next() // 如果访问的不是/login，那么直接跳转即可
     }
   } else {
+    // debugger
     // 不存在token，如果访问白名单路由，那么直接跳转即可
     if (whiteList.indexOf(to.path) > -1) {
       // 这个不能少，如果只是next('/login')，那么会进入到重定向无限循环中

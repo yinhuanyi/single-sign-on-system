@@ -10,11 +10,10 @@ package middlewares
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"goods-server/controllers/response"
+	redisconnect "goods-server/dao/redis"
 	"goods-server/model"
 	"goods-server/settings"
 	"goods-server/utils"
@@ -25,12 +24,11 @@ import (
 	"time"
 )
 
+
 const SSOAuthorize = "http://localhost:8888/api/v1/authorize"
 const SSOToken = "http://localhost:10541/api/v1/token"
 const ClientId = "goods_id"
 const SecretId = "goods_secret"
-
-
 
 
 // JWTAuth token校验，如果客户端携带了token，先查看Redis中是否存在当前token，如果存在并且没有超时，那么直接验证通过。如果Redis中不存在，那么需要发送给SSO服务器，让SSO服务器验证，然后获取userid，最后存储token和userid到Redis中
@@ -38,9 +36,9 @@ func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// 尝试获取token
-		token := c.Request.Header.Get("Authorization")
+		accessToken := c.Request.Header.Get("Authorization")
 		// 如果token为空，有两种情况
-		if token == "" {
+		if accessToken == "" {
 
 			// 1：先获取请求的查询，判断是否有code字段，如果有code字段，说明是SSO执行回调的请求
 			rawQuery := c.Request.URL.RawQuery
@@ -102,8 +100,8 @@ func JWTAuth() gin.HandlerFunc {
 				return
 			}
 
-			// 写入access_token和refresh_token到redis中
-
+			// 写入access_token和refresh_token到redis中, 如果写入错误，不处理
+			_ = redisconnect.CreateAccessRefreshToken(ssoToken.AccessToken, ssoToken.RefreshToken, ssoToken.ExpiresIn)
 
 			// 这里直接返回，加上一个redirect字段，浏览器获取到这redirect字段，说明需要重新发起请求给对应的url
 			redirectUrl := fmt.Sprintf("http://localhost:%d%s", settings.Conf.Port, c.Request.URL.Path)
@@ -134,115 +132,89 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-
-		// 如果获取到了token, 先从Redis中判断是否存在，如果不存在，直接对sso请求，认证token
-		// 此时的从x-token中获取的是 Bearer Token, 这里是获取到Token的值
-		tokens := strings.Split(token, " ")
-		// 如果大于1，说明有Bearer标识, 获取真实的token
-		if len(tokens) > 1 {
-			token = tokens[1]
+		// 获取accessToken
+		accessTokens := strings.Split(accessToken," ")
+		if len(accessTokens) > 1 {
+			accessToken = accessTokens[1]
 		}
 
-		j := NewJWT()
-		claims, err := j.ParseToken(token)
-		// 精确判断token解析的错误类型
-		if err != nil {
-			if err == TokenExpired {
-				c.JSON(http.StatusUnauthorized, gin.H{"msg": "Token已过期"})
+		// 验证accessToken
+		isAccessTokenExist := redisconnect.GetAccessToken(accessToken)
+
+		// 如果存在access_token，表示token验证通过, 获取Uid写入到context中
+		if isAccessTokenExist {
+			// base64解码
+			base64Code := strings.Split(accessToken, ".")[1]
+			claimUpload, err := base64.RawStdEncoding.DecodeString(base64Code)
+			if err != nil{
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "server error" + err.Error()})
 				c.Abort()
 				return
-			}else if err == TokenNotValidYet {
-				c.JSON(http.StatusUnauthorized, gin.H{"msg": "Token未激活"})
+			}
+			ssoJwtClaim := &model.SSOJWTClaim{}
+			if err = json.Unmarshal(claimUpload, ssoJwtClaim); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "server error" + err.Error()})
 				c.Abort()
 				return
-			}else if err == TokenInvalid {
-				c.JSON(http.StatusUnauthorized, gin.H{"msg": "Token非法"})
+			}
+			c.Set("userId", ssoJwtClaim.Subject)
+			c.Next()
+
+		}else { // 如果不存在access token，说明access token过期，那么获取refresh token
+			refreshToken := c.Request.Header.Get("Refresh-Token")
+			isRefreshTokenExist := redisconnect.GetRefreshToken(refreshToken)
+			// 如果isRefreshTokenExist存在，说明refreshtoken有效，那么可以直接基于refresh token更新access token
+			if isRefreshTokenExist {
+				// 构建HTTP请求，更新access token
+				client := http.Client{Timeout: 30000 * time.Second}
+				payload := strings.NewReader(fmt.Sprintf("grant_type=refresh_token&refresh_token=%s", refreshToken))
+				req, err := http.NewRequest("POST", SSOToken, payload)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"msg": "server error: " + err.Error()})
+					c.Abort()
+					return
+				}
+				// 基于clientid和secretid生成base auth
+				basicAuth := utils.GetBase64(ClientId, SecretId)
+				req.Header.Set("Authorization", fmt.Sprintf("Basic %s", basicAuth))
+				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				// 请求sso，获取token
+				resp, err := client.Do(req)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"msg": "server error: " + err.Error()})
+					c.Abort()
+					return
+				}
+				content, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"msg": "server error: " + err.Error()})
+					c.Abort()
+					return
+				}
+				ssoToken := &model.SSOToken{}
+				err = json.Unmarshal([]byte(content), ssoToken)
+				if err != nil{
+					c.JSON(http.StatusInternalServerError, gin.H{"msg": "server error" + err.Error()})
+					c.Abort()
+					return
+				}
+
+				if ssoToken.ExpiresIn == 0 {
+					response.ResponseErrorWithMsg(c, response.CodeBadRequest, "code is invalid")
+					c.Abort()
+					return
+				}
+
+				_ = redisconnect.CreateAccessRefreshToken(ssoToken.AccessToken, ssoToken.RefreshToken, ssoToken.ExpiresIn)
+
+				response.Response302(c, ssoToken)
 				c.Abort()
 				return
-			}else {
-				c.JSON(http.StatusUnauthorized, gin.H{"msg": "Token无法识别"})
+			}else { // 如果refresh_token也过期了，那么让浏览器清除access_token和refresh_token，重新登录即可
+				response.Response303(c)
 				c.Abort()
 				return
 			}
 		}
-
-		c.Set("userId", claims.Id)
-		c.Next()
 	}
-}
-
-// 返回的错误码
-var (
-	TokenExpired     = errors.New("Token过期")
-	TokenNotValidYet = errors.New("Token未激活")
-	TokenMalformed   = errors.New("Token错误")
-	TokenInvalid     = errors.New("Token非法")
-)
-
-type JWT struct {
-	SigningKey []byte
-}
-
-// NewJWT 获取jwt的服务器端的secret
-func NewJWT() *JWT {
-	return &JWT{
-		[]byte(settings.Conf.JWTConfig.Key),
-	}
-}
-
-// CreateToken 创建一个token
-func (j *JWT) CreateToken(claims model.CustomClaims) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(j.SigningKey)
-}
-
-// ParseToken 解析 token
-func (j *JWT) ParseToken(tokenString string) (*model.CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &model.CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
-		return j.SigningKey, nil
-	})
-	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				return nil, TokenMalformed
-			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
-				return nil, TokenExpired
-			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				return nil, TokenNotValidYet
-			} else {
-				return nil, TokenInvalid
-			}
-		}
-	}
-	if token != nil {
-		if claims, ok := token.Claims.(*model.CustomClaims); ok && token.Valid {
-			return claims, nil
-		}
-		return nil, TokenInvalid
-
-	} else {
-		return nil, TokenInvalid
-
-	}
-
-}
-
-// RefreshToken 更新token
-func (j *JWT) RefreshToken(tokenString string) (string, error) {
-	jwt.TimeFunc = func() time.Time {
-		return time.Unix(0, 0)
-	}
-	token, err := jwt.ParseWithClaims(tokenString, &model.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return j.SigningKey, nil
-	})
-	if err != nil {
-		return "", err
-	}
-	if claims, ok := token.Claims.(*model.CustomClaims); ok && token.Valid {
-		jwt.TimeFunc = time.Now
-		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix()
-		return j.CreateToken(*claims)
-	}
-	return "", TokenInvalid
 }

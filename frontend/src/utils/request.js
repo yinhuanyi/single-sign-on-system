@@ -19,7 +19,7 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    if (store.getters.token) {
+    if (store.getters.accessToken) {
       // 判断用户token是否超时
       // if (isCheckTimeout()) {
       //   // 用户登出
@@ -29,7 +29,8 @@ service.interceptors.request.use(
       // }
 
       // 获取用户token，设置Authorization请求头
-      config.headers.Authorization = `Bearer ${store.getters.token}`
+      config.headers.Authorization = `Bearer ${store.getters.accessToken}`
+      config.headers['Refresh-Token'] = store.getters.refreshToken
       // 添加Accept-Language请求头
       config.headers['Accept-Language'] = store.getters.language
     }
@@ -43,9 +44,11 @@ service.interceptors.request.use(
 
 // 响应拦截器
 service.interceptors.response.use(
+
   // 请求成功
   (response) => {
     const res = response.data
+    // console.log(res)
     // 如果success字段是true，那么返回结果
     if (res.success) {
       return res
@@ -58,6 +61,7 @@ service.interceptors.response.use(
       return Promise.reject(new Error(res.message || '请求失败'))
     }
   },
+
   // 请求失败
   (error) => {
     console.log(error)

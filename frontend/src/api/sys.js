@@ -22,3 +22,11 @@ export function ssoSessionSet() {
     method: 'GET'
   })
 }
+
+// 请求用户信息
+export function getUserInfo() {
+  return request({
+    url: '/user/profile',
+    method: 'GET'
+  })
+}

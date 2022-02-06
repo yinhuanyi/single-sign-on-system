@@ -38,9 +38,10 @@ const (
 	//CodeTokenInvalid ResCode = 400
 	//CodeTokenNotActived ResCode = 400
 	//CodeTokenUnrecognized ResCode = 400
-	//
 	//CodeRequestBusy ResCode = 400
 
+	CodeRedirect ResCode = 20302
+	CodeFlushToken ResCode = 20303
 
 )
 
@@ -65,6 +66,9 @@ var CodeMsgMap = map[ResCode]string{
 	//CodeTokenUnrecognized: "Token无法识别",
 	//
 	//CodeRequestBusy: "请求过于频繁, 请稍后重试",
+
+	CodeRedirect:           "302重定向请求",
+	CodeFlushToken: 		"删除浏览器token",
 }
 
 type ResponseData struct {
@@ -128,4 +132,27 @@ func ResponseSuccess(c *gin.Context, data interface{}) {
 
 	c.JSON(http.StatusOK, rd)
 
+}
+
+// Response302 让前端更新access_token和refresh_token
+func Response302(c *gin.Context, data interface{})  {
+	rd := &ResponseData{
+		Success: true,
+		Code: CodeRedirect,
+		Msg:  CodeRedirect.GetMsg(),
+		Data: data,
+	}
+
+	c.JSON(http.StatusOK, rd)
+}
+
+// Response303 让前端删除access_token和refresh_token
+func Response303(c *gin.Context,)  {
+	rd := &ResponseData{
+		Success: true,
+		Code: CodeFlushToken,
+		Msg:  CodeFlushToken.GetMsg(),
+	}
+
+	c.JSON(http.StatusOK, rd)
 }

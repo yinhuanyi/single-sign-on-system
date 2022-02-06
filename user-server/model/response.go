@@ -6,12 +6,14 @@
 
 package model
 
+import "time"
+
 type SSOToken struct {
 	AccessToken string `json:"access_token,omitempty"`
 	RefreshToken string `json:"refresh_token,omitempty"`
 	Scope string `json:"scope,omitempty"`
 	TokenType string `json:"token_type,omitempty"`
-	ExpiresIn int64 `json:"expires_in,omitempty"`
+	ExpiresIn time.Duration `json:"expires_in,omitempty"`
 	RedirectUrl string `json:"redirect_url,omitempty"`
 	Uid string `json:"uid,omitempty"`
 }

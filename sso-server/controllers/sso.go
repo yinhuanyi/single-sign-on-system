@@ -78,13 +78,12 @@ func ReAuthorizeHandler(c *gin.Context) {
 		return
 	}
 
-	// 这里由于没有在浏览器写入session_id，导致无法获取到RequestForm对应的数据
+
 	if err = oauth2.Srv.HandleAuthorizeRequest(c.Writer, c.Request); err != nil {
 		zap.L().Error("[ReAuthorizeHandler]：oauth2.Srv.HandleAuthorizeRequest", zap.Error(err))
 		ResponseError(c, CodeServerInternalError)
 		return
 	}
-
 }
 
 // 获取requestForm的数据, 为LoginHandler服务
@@ -129,33 +128,7 @@ func LoginHandler(c *gin.Context) {
 	switch c.Request.Method {
 
 	case http.MethodGet:
-		// 获取scope，没有意义
-		//data, err := getRequestForm(c)
-
-		//if err != nil {
-		//	code, err := strconv.Atoi(err.Error())
-		//	if err != nil {
-		//		zap.L().Error("[LoginHandler]：strconv.Atoi", zap.Error(err))
-		//		ResponseError(c, CodeServerInternalError)
-		//	}
-		//	ResponseError(c, ResCode(code))
-		//	return
-		//}
-
-		//tmpl, err := template.ParseFiles("tpl/login.html")
-		//if err != nil {
-		//	zap.L().Error("[LoginHandler]：template parse error")
-		//	ResponseError(c, CodeServerInternalError)
-		//	return
-		//}
-		//
-		////if err = tmpl.Execute(c.Writer, data); err != nil {
-		//if err = tmpl.Execute(c.Writer, nil); err != nil {
-		//	zap.L().Error("[LoginHandler]：template execute error")
-		//}
-
 		// 让vue来显示登录页面
-
 		ResponseToLogin(c, "")
 
 
@@ -192,67 +165,6 @@ func LoginHandler(c *gin.Context) {
 
 		c.Redirect(http.StatusFound, "/api/v1/reauthorize")
 		return
-
-		//// csrf token verify
-		//if c.PostForm("type") == "password" {
-		//
-		//	// 如果传递的是空密码那么binding就会校验，依托的是github.com/gin-gonic/gin/binding库，自动校验参数返回
-		//	userLoginParam := &model.UserLoginParam{
-		//		Username: c.PostForm("username"),
-		//		Password: c.PostForm("password"),
-		//	}
-		//
-		//	userID, err := service.GetUserIdByNamePwd(userLoginParam)
-		//
-		//	if err != nil {
-		//		zap.L().Error("[LoginHandler]：service.GetUserIdByNamePwd", zap.Error(err))
-		//		ResponseErrorWithMsg(c, CodeInvalidPassword, err.Error())
-		//	}
-		//
-		//	if userID == "" {
-		//
-		//		tmpl, err := template.ParseFiles("sso/tpl/login.html")
-		//		if err != nil {
-		//			zap.L().Error("[LoginHandler]：template.ParseFiles", zap.Error(err))
-		//			ResponseError(c, CodeServerInternalError)
-		//			return
-		//		}
-		//
-		//		data, err := getRequestForm(c)
-		//
-		//		if err != nil {
-		//			code, err := strconv.Atoi(err.Error())
-		//			if err != nil {
-		//				zap.L().Error("[LoginHandler]：strconv.Atoi", zap.Error(err))
-		//				ResponseError(c, CodeServerInternalError)
-		//			}
-		//			ResponseError(c, ResCode(code))
-		//		}
-		//
-		//		if data != nil {
-		//			data.Error = "用户名或密码错误"
-		//		}
-		//
-		//		if err = tmpl.Execute(c.Writer, data); err != nil {
-		//			zap.L().Error("[LoginHandler]：tmpl.Execute")
-		//		}
-		//
-		//	}
-		//
-		//	// 将userid写入到session中
-		//	if err = session.Set(c.Writer, c.Request, "LoggedInUserID", userID); err != nil {
-		//		zap.L().Error("[LoginHandler]：session.Set", zap.Error(err))
-		//		ResponseError(c, CodeServerInternalError)
-		//		return
-		//	}
-		//
-		//	c.Redirect(http.StatusFound, "/api/v1/reauthorize")
-		//	return
-		//
-		//}
-		//
-		//// csrf token error
-		//ResponseError(c, CodeBadRequest)
 
 	}
 }

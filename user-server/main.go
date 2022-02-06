@@ -17,6 +17,7 @@ import (
 	"syscall"
 	"time"
 	mysqlconnect "user-server/dao/mysql"
+	redisconnect "user-server/dao/redis"
 	"user-server/logger"
 	"user-server/pkg/snowflake"
 	"user-server/route"
@@ -46,6 +47,11 @@ func main() {
 	}
 	log.Println("MySQL init success")
 	defer mysqlconnect.Close()
+
+	if err := redisconnect.Init(settings.Conf.RedisConfig); err != nil {
+		fmt.Printf("Redis init faied：%v", err)
+	}
+	defer redisconnect.Close()
 
 	if err := utils.InitTrans("zh"); err != nil {
 		fmt.Printf("translate init error：%v", err)

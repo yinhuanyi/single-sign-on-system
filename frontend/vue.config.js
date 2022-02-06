@@ -28,8 +28,8 @@ module.exports = {
     port: 8081,
     // 配置反向代理
     proxy: {
-      // 当地址中有/api的时候会触发代理机制
-      '/v1': {
+      // 当地址中有/api/v1的时候会触发代理机制
+      '/api/v1': {
         // 要代理的服务器地址
         target: 'http://localhost:8888/',
         changeOrigin: true // 是否跨域

@@ -12,8 +12,6 @@ import (
 	"go.uber.org/zap"
 	"log"
 	"net/http"
-	"sso/model"
-	"sso/service"
 	"sso/session"
 	"sso/settings"
 
@@ -64,8 +62,8 @@ func Init(cfg *settings.Oauth2Config) (err error) {
 	Manager.MapClientStorage(clientStore)
 	// 创建 Authorization server
 	Srv = server.NewDefaultServer(Manager)
-	// 基于用户名和密码，验证用户
-	Srv.SetPasswordAuthorizationHandler(passwordAuthorizationHandler)
+	//// 基于用户名和密码，验证用户
+	//Srv.SetPasswordAuthorizationHandler(passwordAuthorizationHandler)
 	// 基于用户的请求，验证用户，这里如果从session获取到useid为空，那么会重定向跳转到登录接口
 	Srv.SetUserAuthorizationHandler(userAuthorizeHandler)
 	// 基于用户请求，获取scope
@@ -104,17 +102,17 @@ func userAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userId string
 	return
 }
 
-// 这个方法会在密码模式的时候使用
-func passwordAuthorizationHandler(username, password string) (userId string, err error) {
-
-	param := &model.UserLoginParam{
-		Username: username,
-		Password: password,
-	}
-	userId, err = service.GetUserIdByNamePwd(param)
-
-	return
-}
+//// 这个方法会在密码模式的时候使用
+//func passwordAuthorizationHandler(username, password string) (userId string, err error) {
+//
+//	param := &model.UserLoginParam{
+//		Username: username,
+//		Password: password,
+//	}
+//	userId, err = service.GetUserIdByNamePwd(param)
+//
+//	return
+//}
 
 //func authorizeScopeHandler(w http.ResponseWriter, r *http.Request) (scope string, err error) {
 //
