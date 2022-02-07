@@ -3,6 +3,7 @@ module user-server
 go 1.16
 
 require (
+	github.com/Blank-Xu/sqlx-adapter v0.0.0-20210716082129-8f0d204a2a7d // indirect
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/casbin/casbin/v2 v2.41.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

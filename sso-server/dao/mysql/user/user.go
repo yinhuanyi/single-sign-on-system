@@ -19,7 +19,7 @@ func GetUserIdByNamePwd(user *model.User) (userId int64, err error) {
 	username := user.Username
 	currentPassword := user.Password
 
-	sqlStr := "select user_id, username, password from user where username = ?"
+	sqlStr := "select user_id, username, password from user_user where username = ?"
 	err = mysqlconnect.Db.Get(user, sqlStr, username)
 	if err == sql.ErrNoRows {
 		return 0, mysqlconnect.ErrorUserNotExist

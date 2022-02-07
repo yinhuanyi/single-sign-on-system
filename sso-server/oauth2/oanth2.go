@@ -102,37 +102,7 @@ func userAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userId string
 	return
 }
 
-//// 这个方法会在密码模式的时候使用
-//func passwordAuthorizationHandler(username, password string) (userId string, err error) {
-//
-//	param := &model.UserLoginParam{
-//		Username: username,
-//		Password: password,
-//	}
-//	userId, err = service.GetUserIdByNamePwd(param)
-//
-//	return
-//}
-
-//func authorizeScopeHandler(w http.ResponseWriter, r *http.Request) (scope string, err error) {
-//
-//	if err = r.ParseForm(); err != nil {
-//		return
-//	}
-//
-//	scopeObj := utils.GetClientScope(r.Form.Get("client_id"), r.Form.Get("scope"))
-//	if scopeObj == nil {
-//		http.Error(w, "Invalid Scope", http.StatusBadRequest)
-//		return
-//	}
-//
-//	scope = utils.ScopeNameJoin(scopeObj)
-//
-//	return
-//}
-
 func internalErrorHandler(err error) (re *errors.Response) {
-
 	zap.L().Error("Oauth2.0 Internal Error", zap.Error(err))
 
 	return

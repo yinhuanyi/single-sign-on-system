@@ -1,0 +1,5 @@
+p, developer, /goods/*, read
+p, admin, /goods/*, read
+p, admin, /goods/*, write
+g, robby1, admin
+g, robby2, developer
