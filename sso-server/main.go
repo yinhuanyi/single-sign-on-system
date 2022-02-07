@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/signal"
 	mysqlconnect "sso/dao/mysql"
+	redisconnect "sso/dao/redis"
 	"sso/logger"
 	"sso/oauth2"
 	"sso/route"
@@ -51,6 +52,11 @@ func main() {
 	}
 	log.Println("MySQL连接成功")
 	defer mysqlconnect.Close()
+
+	if err := redisconnect.Init(settings.Conf.RedisConfig); err != nil {
+		fmt.Printf("Redis init faied：%v", err)
+	}
+	defer redisconnect.Close()
 
 	if err := session.Init(settings.Conf.SessionConfig); err != nil {
 		log.Fatalf("初始化session失败：%s\n", err.Error())

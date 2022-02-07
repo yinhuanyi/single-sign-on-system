@@ -10,9 +10,11 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"net/http"
 	"net/url"
+	"sso/dao/redis"
 	"sso/model"
 	"sso/oauth2"
 	"sso/service"
@@ -34,7 +36,7 @@ LoginHandler POST.....................
 ReAuthorizeHandler.....................
 */
 
-// AuthorizeHandler Get接口，第一次调用
+// AuthorizeHandler Get接口
 func AuthorizeHandler(c *gin.Context) {
 
 	if err := session.Delete(c.Writer, c.Request, "RequestForm"); err != nil {
@@ -134,6 +136,7 @@ func LoginHandler(c *gin.Context) {
 
 	case http.MethodPost:
 
+
 		// 获取用户提交的用户名和密码
 		params := new(model.UserLoginParam)
 		if err := c.ShouldBindJSON(params); err != nil {
@@ -148,12 +151,27 @@ func LoginHandler(c *gin.Context) {
 			return
 		}
 
+		username := params.Username
+		// 判断用户否被锁定
+		if redis.IsIpBlock(username) {
+			zap.L().Info("username is blocked", zap.String("username", username))
+			ResponseErrorWithMsg(c, CodeUsernameIsBlocked, errors.New(fmt.Sprintf("Blocked Username: %s", username)))
+			return
+		}
+
 		// 基于用户名密码获取userid
 		userID, err := service.GetUserIdByNamePwd(params)
 
 		if err != nil || userID == "" {
 			zap.L().Error("[LoginHandler]：service.GetUserIdByNamePwd", zap.Error(err))
+
+			// 登录失败，判断当前username是否需要block，如果block了，那么失败次数就不需要再加1了，如果没有block，让失败次数加1
+			if isBlocked := redis.BlockFailedLoginUsername(username); !isBlocked {
+				redis.IncreaseFailedLoginUsername(username)
+			}
+
 			ResponseErrorWithMsg(c, CodeInvalidPassword, err.Error())
+			return
 		}
 
 		// 将userid写入到session中

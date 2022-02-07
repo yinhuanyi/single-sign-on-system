@@ -19,7 +19,7 @@ mysql:
   max_open_connection: 1000
   max_idle_connection: 100
 
-# 这个Redis连接给Oauth2的client存储使用
+# 这个Redis连接给Oauth2.0存储Token和设置IP黑名单使用
 redis:
   host: "127.0.0.1"
   port: 6379

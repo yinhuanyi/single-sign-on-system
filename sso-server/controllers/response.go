@@ -30,6 +30,7 @@ const (
 	CodeServerInternalError
 
 	CodeFrontLogin
+	CodeUsernameIsBlocked
 )
 
 var CodeMsgMap = map[ResCode]string{
@@ -45,6 +46,7 @@ var CodeMsgMap = map[ResCode]string{
 	CodeServerInternalError: "服务内部错误",
 
 	CodeFrontLogin:          "Login",
+	CodeUsernameIsBlocked:	 "当前用户被锁定，请5分钟后重试",
 }
 
 type ResponseData struct {
