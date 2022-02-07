@@ -47,4 +47,3 @@ func BlockFailedLoginUsername(username string) bool {
 	}
 	return false
 }
-

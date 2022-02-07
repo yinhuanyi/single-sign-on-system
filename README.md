@@ -15,6 +15,6 @@
   - Gin 提供Web层HTTP请求处理
   - go-oauth2/oauth2 提供 Oauth2.0授权码认证模型
   - casbin 为user-server提供RBAC权限模型
-  - Redis 提供session会话和Token的存储
+  - Redis 提供session会话和Token的存储，以及用户登录失败锁定用户逻辑
   - MySQL 提供数据存储
   - ...... 持续开发中
