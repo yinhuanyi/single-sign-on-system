@@ -5,7 +5,7 @@
   <!-- 自定义的icon -->
   <svg-icon v-else :icon="icon"></svg-icon>
   <!-- 文本 -->
-  <span> {{ generateTitle(title) }}</span>
+  <span class='title'> {{ generateTitle(title) }}</span>
 </template>
 
 <script setup>
@@ -26,4 +26,12 @@ defineProps({
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.title{
+  margin-left: 10px;
+  font-weight: 600;
+  //line-height: 50px;
+  font-size: 15px;
+  //white-space: nowrap;
+}
+</style>

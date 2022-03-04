@@ -13,7 +13,7 @@
       @contextmenu.prevent="openMenu($event, index)"
     >
       <!-- 标题 -->
-      {{ tag.title }}
+      <span class='menu-title'>{{ tag.title }}</span>
       <!-- 小叉号图标 -->
       <i
         v-show="!isActive(tag)"
@@ -141,6 +141,10 @@ watch(visible, (val) => {
         background-color: #b4bccc;
         color: #fff;
       }
+    }
+    .menu-title {
+      font-size: 14px;
+      font-weight: bolder;
     }
   }
 }
