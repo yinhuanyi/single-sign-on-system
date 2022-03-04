@@ -1,13 +1,9 @@
 <template>
-  <div>article-create</div>
+  <div>创建文章</div>
 </template>
 
-<script>
-export default {
-  data: function() {
-    return {}
-  }
-}
+<script setup>
+
 </script>
 
 <style scoped lang='scss'>

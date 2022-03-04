@@ -1,5 +1,5 @@
 <template>
-  <div>用户中心</div>
+  <div>仪表盘</div>
 </template>
 
 <script setup>

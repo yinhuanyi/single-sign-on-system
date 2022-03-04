@@ -26,6 +26,7 @@ export default {
     `
   },
   route: {
+    dashboard: 'dashboard',
     profile: 'Profile',
     user: 'User',
     excelImport: 'ExcelImport',

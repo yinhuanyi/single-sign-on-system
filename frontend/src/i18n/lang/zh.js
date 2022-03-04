@@ -26,6 +26,7 @@ export default {
     `
   },
   route: {
+    dashboard: '仪表盘',
     profile: '个人中心',
     user: '用户',
     excelImport: 'Excel导入',

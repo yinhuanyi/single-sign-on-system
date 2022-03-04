@@ -115,6 +115,12 @@ const publicRoutes = [
         meta: { title: 'profile', icon: 'el-icon-user' }
       },
       {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: () => import('@/views/dashboard'),
+        meta: { title: 'dashboard', icon: 'el-icon-user' }
+      },
+      {
         path: '/404',
         name: '404',
         component: () => import('@/views/error-page/404')

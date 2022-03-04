@@ -1,13 +1,8 @@
 <template>
-  <div></div>
+  <div>权限列表</div>
 </template>
 
-<script>
-export default {
-  data: function() {
-    return {}
-  }
-}
+<script setup>
 </script>
 
 <style scoped lang='scss'>
