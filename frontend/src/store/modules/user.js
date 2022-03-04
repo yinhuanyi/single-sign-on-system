@@ -8,6 +8,7 @@ import router from '@/router'
 import { ACCESSTOKEN, REFRESHTOKEN } from '@/constant'
 import { setItem, getItem, removeAllItem, removeAllCookie } from '@/utils/storage'
 import { getUserInfo, login, ssoSessionSet } from '@/api/sys'
+import { setTimeStamp } from '@/utils/auth'
 
 const state = {
   accessToken: getItem(ACCESSTOKEN) || '',
@@ -63,6 +64,7 @@ const actions = {
           // console.log(data)
           commit('setAccessToken', data.access_token)
           commit('setRefreshToken', data.refresh_token)
+          setTimeStamp()
           router.push('/')
           resolve()
         })
@@ -95,8 +97,23 @@ const actions = {
       router.push('/')
       return res
     }
+    // console.log(res)
     commit('setUserInfo', res.data)
     return res
+  },
+
+  // 用户退出
+  logout({ commit }) {
+    commit('setAccessToken', '')
+    commit('setRefreshToken', '')
+    commit('setUserInfo', {})
+    // Todo: 清除浏览器的session
+    removeAllCookie()
+    // 清理localStorage中的token
+    removeAllItem()
+    // Todo: 清理掉权限相关的配置
+    // router.push('/login') // 跳转到登录页面
+    router.go(0)
   }
 }
 

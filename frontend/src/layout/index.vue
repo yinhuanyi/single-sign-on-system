@@ -1,16 +1,18 @@
 <template>
-  <div class="app-wrapper">
+  <div class="app-wrapper" :class="[$store.getters.sidebarOpened ? 'openSidebar' : 'hideSidebar']">
     <!-- 左侧 menu -->
     <!-- 这里的style是行内样式，目的是根据menuBg变量，改变menu背景色 -->
     <sidebar
       class="sidebar-container"
-      :style="{ backgroundColor: variables.menuBg }"
+      :style="{ backgroundColor: $store.getters.cssVar.menuBg }"
     />
     <!-- 右侧容器 -->
     <div class="main-container">
       <div class="fixed-header">
         <!-- 顶部的 navbar -->
         <navbar />
+        <!-- tagsView -->
+        <tags-view id="guide-tags" />
       </div>
       <!-- 内容区 -->
       <app-main />
@@ -19,11 +21,11 @@
 </template>
 
 <script setup>
+import TagsView from '@/components/TagsView'
 import Navbar from '@/layout/components/Navbar'
 import Sidebar from '@/layout/components/Sidebar'
 import AppMain from '@/layout/components/AppMain'
-// 导入样式变量
-import variables from '@/styles/variables.scss'
+
 </script>
 
 <style scoped lang="scss">
@@ -47,5 +49,10 @@ import variables from '@/styles/variables.scss'
   z-index: 9;
   // Navbar的宽度是屏幕宽度 - Menu宽度
   width: calc(100% - #{$sideBarWidth});
+  transition: width 0.28s;
+}
+
+.hideSidebar .fixed-header {
+  width: calc(100% - #{$hideSideBarWidth});
 }
 </style>

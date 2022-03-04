@@ -30,8 +30,8 @@ const (
 	CodeServerBusy
 	CodeServerInternalError
 
-	CodeBookExist
-	CodeBookNotExist
+	//CodeBookExist
+	//CodeBookNotExist
 
 	//CodeTokenNeeded ResCode = 400
 	//CodeTokenExpired ResCode = 400
@@ -56,8 +56,8 @@ var CodeMsgMap = map[ResCode]string{
 	CodeInvalidToken:        "无效的token",
 	CodeServerBusy:          "服务器繁忙",
 	CodeServerInternalError: "服务内部错误",
-	CodeBookExist:			 "电子书已经存在",
-	CodeBookNotExist:		 "电子书不存在",
+	//CodeBookExist:			 "电子书已经存在",
+	//CodeBookNotExist:		 "电子书不存在",
 
 	//CodeTokenNeeded:       "用户未登录",
 	//CodeTokenInvalid:      "Token不合法",

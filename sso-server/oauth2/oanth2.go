@@ -91,10 +91,7 @@ func userAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userId string
 		if err = session.Set(w, r, "RequestForm", r.Form.Encode()); err != nil {
 			return
 		}
-
-
 		http.Redirect(w, r, "/api/v1/login", http.StatusFound)
-
 
 	}
 

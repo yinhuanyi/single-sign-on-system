@@ -6,9 +6,10 @@ import router from './router'
 import installIcons from '@/icons'
 import '@/styles/index.scss'
 import '@/permission'
+import i18n from '@/i18n'
 
 const app = createApp(App)
 installElementPlus(app)
 installIcons(app)
 
-app.use(store).use(router).mount('#app')
+app.use(store).use(router).use(i18n).mount('#app')

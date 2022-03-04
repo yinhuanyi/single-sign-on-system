@@ -1,13 +1,15 @@
 <template>
-  <div>Sidebar</div>
+  <div></div>
 </template>
 
 <script>
 export default {
-  data: function () {
+  data: function() {
     return {}
   }
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang='scss'>
+
+</style>

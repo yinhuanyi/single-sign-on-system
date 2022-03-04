@@ -22,3 +22,20 @@ type SSOJWTClaim struct {
 	ExpiresAt int64  `json:"exp,omitempty"`
 	Subject   string `json:"sub,omitempty"`
 }
+
+// User user_user 表用户信息
+type User struct {
+	Id       int    `json:"id" db:"id"`
+	UserId   int    `json:"user_id" db:"user_id"`
+	Username string `json:"username" db:"username"`
+	Title    string `json:"title" db:"title"`
+	Avatar   string `json:"avatar" db:"avatar"`
+	RoleId   string `json:"role_id" db:"role_id"`
+}
+
+// Role user_role表角色信息
+type Role struct {
+	Id int `json:"id" db:"id"`
+	Title string `json:"title" db:"title"`
+	Describe string `json:"describe,omitempty" db:"describe"`
+}

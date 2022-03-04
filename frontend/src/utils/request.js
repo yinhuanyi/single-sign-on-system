@@ -7,7 +7,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import store from '@/store'
-// import { isCheckTimeout } from '@/utils/auth'
+import { isCheckTimeout } from '@/utils/auth'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -21,12 +21,12 @@ service.interceptors.request.use(
   (config) => {
     if (store.getters.accessToken) {
       // 判断用户token是否超时
-      // if (isCheckTimeout()) {
-      //   // 用户登出
-      //   store.dispatch('user/logout')
-      //   // 抛出异常
-      //   return Promise.reject(new Error('token 失效'))
-      // }
+      if (isCheckTimeout()) {
+        // 用户登出
+        store.dispatch('user/logout')
+        // 抛出异常
+        return Promise.reject(new Error('token 失效'))
+      }
 
       // 获取用户token，设置Authorization请求头
       config.headers.Authorization = `Bearer ${store.getters.accessToken}`
@@ -65,7 +65,7 @@ service.interceptors.response.use(
   // 请求失败
   (error) => {
     console.log(error)
-    // 判断服务器端返回的状态码，根据状态码===401，让用户登出
+    // 判断服务器端返回的状态码，如果状态码===401，让用户登出。这里是判断单点登录的情况，当用户再次登录的时候，会将之前的access_token和refresh_token删除
     if (
       error.response &&
       error.response.data &&

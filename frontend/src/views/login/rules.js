@@ -5,12 +5,12 @@
  * @Function:
  **/
 
-// import i18n from '@/i18n'
+import i18n from '@/i18n'
 
 export const validatorPassword = (rule, value, callback) => {
   if (value.length > 5) {
     callback() // 表示通过
   } else {
-    callback(new Error('用户名长度必须大于5位数'))
+    callback(new Error(i18n.global.t('msg.login.passwordRule')))
   }
 }

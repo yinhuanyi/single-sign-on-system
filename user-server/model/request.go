@@ -11,4 +11,3 @@ type GoodsCreateInput struct {
 	Name string `json:"name" binding:"required" db:"goods_sn"`
 	MarketPrice float64 `json:"market_price" binding:"required" db:"market_price"`
 }
-

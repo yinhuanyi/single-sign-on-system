@@ -209,6 +209,7 @@ func JWTAuth() gin.HandlerFunc {
 
 				_ = redisconnect.CreateAccessRefreshToken(ssoToken.AccessToken, ssoToken.RefreshToken, ssoToken.ExpiresIn)
 
+				// 告诉浏览器，再次发起请求
 				response.Response302(c, ssoToken)
 				c.Abort()
 				return
