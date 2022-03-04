@@ -13,7 +13,7 @@ import { defineProps } from 'vue'
 import SvgIcon from '@/components/SvgIcon'
 import { generateTitle } from '@/utils/i18n'
 
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     required: true
@@ -23,8 +23,6 @@ const props = defineProps({
     required: true
   }
 })
-
-console.log(props.title)
 
 </script>
 

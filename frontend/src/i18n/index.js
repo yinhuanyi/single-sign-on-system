@@ -9,9 +9,15 @@ import { createI18n } from 'vue-i18n'
 import zhLocale from './lang/zh'
 import enLocale from './lang/en'
 import store from '@/store'
+import { getItem } from '@/utils/storage'
+import { LANG } from '@/constant'
 
-function getLanguage() {
+function getLanguageFromVuex() {
   return store && store.getters && store.getters.language
+}
+
+function getLanguageFromLS() {
+  return getItem(LANG)
 }
 
 const messages = {
@@ -30,7 +36,7 @@ const messages = {
 const i18n = createI18n({
   legacy: false, // vue3使用composition api
   globalInjection: true, // 全局使用t函数
-  locale: getLanguage(),
+  locale: getLanguageFromVuex() || getLanguageFromLS() || 'zh',
   messages
 })
 
